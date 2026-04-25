@@ -2,11 +2,8 @@ import Phaser from 'phaser';
 
 export class Badminton extends Phaser.GameObjects.Sprite {
   declare public body: Phaser.Physics.Arcade.Body;
-  private particles!: any;
-  private trailEmitter!: Phaser.GameObjects.Particles.ParticleEmitter;
   private airResistance: number = 0.995;
   private spinFactor: number = 0.001;
-  private isEmitterOn: boolean = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, '');
@@ -16,7 +13,6 @@ export class Badminton extends Phaser.GameObjects.Sprite {
     scene.physics.add.existing(this);
     
     this.setupPhysics();
-    this.createTrail();
     
     this.setDepth(10);
   }
@@ -83,21 +79,6 @@ export class Badminton extends Phaser.GameObjects.Sprite {
     this.body.setSize(20, 20, true);
   }
 
-  private createTrail(): void {
-    this.particles = this.scene.add.particles(0, 0, 'shuttlecock', {
-      x: this.x,
-      y: this.y,
-      scale: { start: 0.3, end: 0 },
-      alpha: { start: 0.5, end: 0 },
-      lifespan: 150,
-      frequency: 80
-    });
-    
-    this.trailEmitter = this.particles.emitters.first;
-    this.trailEmitter.stop();
-    this.particles.setDepth(9);
-  }
-
   public setVelocity(vx: number, vy: number): void {
     this.body.setVelocity(vx, vy);
   }
@@ -113,7 +94,6 @@ export class Badminton extends Phaser.GameObjects.Sprite {
   public update(): void {
     this.updatePhysics();
     this.updateRotation();
-    this.updateTrail();
   }
 
   private updatePhysics(): void {
@@ -154,24 +134,6 @@ export class Badminton extends Phaser.GameObjects.Sprite {
       const angleDiff = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);
       
       this.rotation += angleDiff * 0.1;
-    }
-  }
-
-  private updateTrail(): void {
-    const velocity = this.body.velocity;
-    
-    if (velocity.length() > 100) {
-      if (!this.isEmitterOn) {
-        this.trailEmitter.start();
-        this.isEmitterOn = true;
-      }
-      
-      this.trailEmitter.setPosition(this.x, this.y);
-    } else {
-      if (this.isEmitterOn) {
-        this.trailEmitter.stop();
-        this.isEmitterOn = false;
-      }
     }
   }
 

@@ -52,7 +52,7 @@ export class GameScene extends Phaser.Scene {
     graphics.lineStyle(2, 0xffcc00, 0.8);
     graphics.lineBetween(600, 50, 600, 550);
     
-    graphics.destroy();
+    graphics.setDepth(1);
   }
 
   private createNet(): void {
